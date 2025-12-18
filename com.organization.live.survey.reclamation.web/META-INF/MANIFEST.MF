@@ -1,0 +1,24 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Reclamation Servlet
+Bundle-SymbolicName: com.organization.live.survey.reclamation.web
+Bundle-Version: 1.0.2
+Bundle-Vendor: SCALABLE
+Web-ContextPath: reclamation
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: com.springsource.javax.servlet;bundle-version="2.5.0",
+ org.apache.commons.io;bundle-version="1.4.0",
+ slf4j.api;bundle-version="1.6.2",
+ com.springsource.org.apache.commons.lang;bundle-version="2.4.0",
+ com.springsource.org.apache.commons.codec;bundle-version="1.4.0",
+ com.organization.live.logger,
+ com.organization.live.db,
+ com.organization.live.survey.reclamation,
+ com.organization.live.scheduler,
+ com.organization.live.scheduler.impl,
+ com.organization.live.installer.impl;bundle-version="2.0.0",
+ com.organization.live.plugin,
+ com.organization.live.notification.transport.service,
+ com.organization.live.installer,
+ com.organization.live.ui.service
+

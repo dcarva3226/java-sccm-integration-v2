@@ -1,0 +1,28 @@
+<dump>
+	<keys>
+		<key table="sys_sch_event">
+   			<column>name</column>
+  		</key>
+  		<key table="sys_sch_reclam_svc_init_job">
+   			<column>name</column>
+  		</key>
+  		<key table="sys_user">
+   			<column>user_name</column>
+  		</key>
+  		<key table="sys_sch_event_type">
+   			<column>name</column>
+  		</key>
+  		<key table="sys_sch_idempotence_type">
+   			<column>name</column>
+  		</key>
+ 	</keys>
+ 	<refs>
+ 		<sys_user id="1" user_name="admin" />
+ 		<sys_sch_event_type id="1" name="OnServiceStart" />
+  		<sys_sch_idempotence_type id="1" name="Global" />
+	</refs>
+ 	<data>
+  		<sys_sch_reclam_svc_init_job id="1" name="Reclamation Service On Start" digest="Reclamation Service On Start" idempotence_type_id="1"/>
+  		<sys_sch_event name="Reclamation Service On Start" active="true" sys_user_id="1" job_id="1" event_type_id="1"/>
+ 	</data>
+</dump>

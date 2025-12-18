@@ -1,0 +1,27 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: LiveSurvey Reclamation
+Bundle-SymbolicName: com.organization.live.survey.reclamation
+Bundle-Version: 1.0.8
+Bundle-Vendor: SCALABLE
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: com.springsource.org.apache.commons.lang,
+ com.organization.live.server.probe.sccm,
+ com.organization.live.survey,
+ com.organization.live.init,
+ com.organization.live.plugin,
+ com.organization.live.db,
+ com.organization.live.ui.system.component,
+ com.organization.live.ui.common,
+ com.organization.live.ui.service,
+ com.organization.live.notification.transport.service
+Import-Package: com.organization.live.logger,
+ org.apache.commons.lang,
+ org.osgi.framework,
+ org.slf4j,
+ com.organization.live.installer.utility
+Export-Package: com.organization.live.survey.reclamation,
+ com.organization.live.survey.reclamation.component,
+ com.organization.live.survey.reclamation.db,
+ com.organization.live.survey.reclamation.messenger
+

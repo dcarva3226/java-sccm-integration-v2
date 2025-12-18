@@ -1,0 +1,692 @@
+<refs>
+	<cmdb_management_platform>
+		<ref id="1" value="SMS/SCCM" />
+	</cmdb_management_platform>
+	<cmdb_asset_expense_period>
+		<ref id="1" value="Annual" />
+	</cmdb_asset_expense_period>	
+</refs>
+<menu name="Software Reclamation" parent="Optimize" component="HTML Page" icon="icon-software_lifecycle">
+	<children>
+		<menu name="Reports" parent="Setup>Software Reclamation" icon="icon-invoice">
+			<children>
+				<menu name="Summary by Reclamation" parent="Setup>Software Reclamation>Reports" component="Data View Grid" icon="icon-software_lifecycle">
+					<configs>
+						<data_view_info name="Summary by Reclamation" table="opz_reclamation" category="Optimize" show_summary="f" group_fields="t">
+							<columns>
+								<column path="name" field_set="opz_reclamation" show_in_table="t" label="Reclamation Plan Name"/>
+								<column path="signature_spv" field_set="opz_reclamation" show_in_table="t" label="Software"/>
+								<column path="signature_name" field_set="opz_reclamation" show_in_table="t" label="Signature"/>
+								<column field_set="opz_reclamation" custom_control="Drill Down" data_view="Reclamation Computers" show_in_table="t" label="Computers Submitted">
+									<attributes>
+										<path><![CDATA[_agg:total_submitted:Total computers included in this reclamation plan:Reclamation Computers:" var 'reclamation' is "id" and var 'reclamation' is "id" ":COUNT:]]></path>
+										<criteria><![CDATA[ var 'reclamation' is "id" ]]></criteria>
+									</attributes>
+								</column>
+								<column custom_control="Drill Down" data_view="Reclamation Computers" show_in_table="t" label="Candidate Computers">
+									<attributes>
+										<path><![CDATA[_agg:total_candidates:Total computers in this plan that are managed by SCCM and have a primary user email:Reclamation Computers:" var 'reclamation' is "id" and var 'reclamation' is "id" and 'is_sccm_managed' greater than 0 and ( 'computer>owner>person>email' is not empty  or 'computer>owner>email' is not empty  or 'computer>primary_user>person>email' is not empty  or 'computer>primary_user>email' is not empty  ) ":COUNT:]]></path>
+										<criteria><![CDATA[ var 'reclamation' is "id" and 'is_sccm_managed' greater than 0 and ( 'computer>owner>person>email' is not empty  or 'computer>owner>email' is not empty  or 'computer>primary_user>person>email' is not empty  or 'computer>primary_user>email' is not empty  ) ]]></criteria>
+									</attributes>
+								</column>								
+								<column custom_control="Drill Down" data_view="Reclamation Computers" show_in_table="t" label="Users Accepted">
+									<attributes>
+										<path><![CDATA[_agg:total_confirmed:Total users who confirmed to submit to SCCM or No Reponse Action is to uninstall:Reclamation Computers:" var 'reclamation' is "id" and var 'reclamation' is "id" and ( 'user_response' is t or ( 'reclamation>no_response_action' is 2 and 'take_no_response_action' is t ) ) ":COUNT:]]></path>
+										<criteria><![CDATA[ var 'reclamation' is "id" and ( 'user_response' is t or ( 'reclamation>no_response_action' is 2 and 'take_no_response_action' is t ) ) ]]></criteria>
+									</attributes>
+								</column>
+								<column custom_control="Drill Down" data_view="Reclamation Computers" show_in_table="t" label="Users Declined">
+									<attributes>
+										<path><![CDATA[_agg:total_declined:Total users who declined to submit to SCCM or No Reponse Action is to not uninstall:Reclamation Computers:" var 'reclamation' is "id" and ( 'user_response' is f or ( 'reclamation>no_response_action' is 1 and 'take_no_response_action' is f ) ) ":COUNT:]]></path>
+										<criteria><![CDATA[ var 'reclamation' is "id" and ( 'user_response' is f or ( 'reclamation>no_response_action' is 1 and 'take_no_response_action' is f ) ) ]]></criteria>
+									</attributes>
+								</column>							
+								<column custom_control="Drill Down" data_view="Reclamation Computers" show_in_table="t" label="Uninstalled">
+									<attributes>
+										<path><![CDATA[_agg:uninstalled:Total computer count where the software has been uninstalled due to reclamation:Reclamation Computers:" var 'reclamation' is "id" and var 'reclamation' is "id" and 'signature>operational' is not t and ( 'user_response' is t or ( 'take_no_response_action' is t and 'reclamation>no_response_action' is 2 ) ) ":COUNT:]]></path>
+										<criteria><![CDATA[ var 'reclamation' is "id" and 'signature>operational' is not t and ( 'user_response' is t or ( 'take_no_response_action' is t and 'reclamation>no_response_action' is 2 ) ) ]]></criteria>
+									</attributes>
+								</column>
+								<column name="Number" pattern="###,###.###" type="Number Formatter" example="12,345.678" field_set="opz_reclamation" show_in_table="t" label="Software Cost">
+									<attributes>
+										<path><![CDATA[_agg:cost:Cost of software:Reclamation Computers:" var 'reclamation' is "id" ":SUM:software_liability]]></path>
+									</attributes>
+								</column>
+								<column name="Number" pattern="###,###.###" type="Number Formatter" example="12,345.678" show_in_table="t" label="Cost savings">
+									<attributes>
+										<path><![CDATA[_calc:cost_savings:Cost savings for this software:local_money:"var software_savings;
+var uninstalled = get(\"Uninstalled\");
+var cost = get(\"Software Cost\");
+											
+if (cost != 0 && uninstalled  != 0)
+{
+	software_savings = cost * uninstalled;
+}
+else
+{
+	software_savings = 0;
+}
+software_savings;":]]></path>
+									</attributes>
+								</column>
+							</columns>
+							<field_sets>
+								<field_set name="opz_reclamation" label="Reclamation" collapsed="f"/>
+							</field_sets>
+							<related_views>
+								<data_view_info name="Reclamation Configuration" table="opz_reclamation_config" show_summary="f" group_fields="t">
+									<columns>
+										<column path="name" show_in_table="t"/>
+										<column path="is_enabled" show_in_table="t"/>
+										<column path="default_email_expiration_days" show_in_table="t"/>
+										<column path="default_email_groom_days" show_in_table="t"/>
+										<column path="default_email_send_wait_days" show_in_table="t"/>
+										<column path="default_max_email_attempts" show_in_table="t"/>
+										<column path="default_allow_restarts" show_in_table="t"/>
+										<column path="use_owner" show_in_table="t"/>
+										<column path="use_user" show_in_table="t"/>
+										<column path="logo" show_in_table="t"/>
+										<column path="agent_stale_days" show_in_table="t"/>
+									</columns>
+								</data_view_info>							
+								<data_view_info name="Reclamation Computers" table="opz_reclamation_computer" show_summary="f" group_fields="t">
+									<columns>
+										<column path="computer" show_in_table="t"/>
+										<column path="email_send_attempts" show_in_table="t"/>
+										<column path="email_confirmed" show_in_table="t" label="Email Confirmed"/>
+										<column path="user_response" show_in_table="t" label="User Response"/>
+										<column path="take_no_response_action" show_in_table="t"/>
+										<column path="signature>software" field_set="opz_reclamation_computer" show_in_table="t" label="Software"/>
+										<column path="signature" show_in_table="t" Label="Signature"/>
+										<column path="signature>operational" field_set="opz_reclamation_computer" show_in_table="t" label="Signature Operational"/>
+										<column path="reclamation>no_response_action" field_set="opz_reclamation_computer" show_in_table="f" label="No Response Action"/>
+										<column path="signature>software>product" field_set="opz_reclamation_computer" show_in_table="f" label="Software Product"/>
+										<column show_in_table="t" label="Email">
+											<attributes>
+					<path><![CDATA[_calc:email::string:"var useOwner = get(\"Use Owner True\");
+var usePrimaryUser = get(\"Use User True\");
+var ownerPersonEmail = get(\"Owner Person Email\");
+var ownerUserEmail = get(\"Owner User Email\");
+var primaryPersonEmail = get(\"Primary Person Email\");
+var primaryUserEmail = get(\"Primary User Email\");
+
+var email = null;
+
+if (useOwner > 0)
+{
+    if (ownerPersonEmail != null)
+        email = ownerPersonEmail;
+    else if (ownerUserEmail != null)
+        email = ownerUserEmail;
+}
+
+if (usePrimaryUser > 0 && email == null)
+{
+    if (primaryPersonEmail != null)
+        email = primaryPersonEmail;
+    else if (primaryUserEmail != null)
+        email = primaryUserEmail;    
+}
+
+	email;":]]></path>
+											</attributes>
+										</column>										
+										<column path="reclamation" show_in_table="f"/>
+										<column path="id" show_in_table="f"/>
+										<column path="computer>primary_user>person>email" field_set="cmdb_ci_computer" show_in_table="f" label="Primary Person Email"/>
+										<column path="computer>primary_user>email" field_set="cmdb_ci_computer" show_in_table="f" label="Primary User Email"/>
+										<column path="computer>owner>person>email" field_set="cmdb_ci" show_in_table="f" label="Owner Person Email"/>
+										<column path="computer>owner>email" field_set="cmdb_ci" show_in_table="f" label="Owner User Email"/>											
+										<column field_set="opz_reclamation_computer" show_in_table="t" label="Software Cost">
+											<attributes>
+												<path><![CDATA[_agg:software_liability:Cost of software product:Software Expense:" var 'software_product' is "signature>software>product" and 'expense_period' is "1" and ( 'expense_type' ends with "Software Maintenance" or 'expense_type' ends with "Software Subscription" ) ":AVG:local_cost]]></path>
+											</attributes>
+										</column>
+										<column field_set="opz_reclamation_computer" show_in_table="f" label="Is Sccm Managed">
+											<attributes>
+												<path><![CDATA[_agg:is_sccm_managed:Managed by SCCM:Reclamation Managed Computers:" var 'device' is "computer" ":COUNT:]]></path>
+											</attributes>
+										</column>
+										<column show_in_table="f" label="Use Owner True">
+											<attributes>
+												<path><![CDATA[_agg:use_owner_true:Does Reclamation configuration have 'Use Owner' enabled?:Reclamation Configuration:" 'use_owner' is t ":COUNT:]]></path>
+											</attributes>
+										</column>
+										<column show_in_table="f" label="Use User True">
+											<attributes>
+												<path><![CDATA[_agg:use_primary_user_true:Does Reclamation configuration have 'Use Primary User' enabled?:Reclamation Configuration:" 'use_user' is t ":COUNT:]]></path>
+											</attributes>
+										</column>											
+									</columns>
+									<field_sets>
+										<field_set name="opz_reclamation_computer" label="Reclamation computer" collapsed="f"/>
+									</field_sets>
+									<related_views>
+										<data_view_info name="Software Expense" table="cmdb_asset_expense_software" description="Capital Software Expenditure" category="Optimize" icon="icon-commercial_software" show_summary="f" group_fields="f">
+											<columns>
+												<column path="software_product" show_in_table="t"/>
+												<column path="expense_type" show_in_table="t"/>
+												<column path="expense_period" show_in_table="t"/>
+												<column path="expense_metric" show_in_table="t"/>
+												<column path="currency" show_in_table="f"/>
+												<column path="cost_date" show_in_table="f"/>
+												<column path="cost" show_in_table="f"/>
+												<column path="local_cost" show_in_table="t"/>
+												<column path="expense_type>capex" show_in_table="t" label="Capex"/>
+											</columns>
+										</data_view_info>
+										<data_view_info name="Reclamation Managed Computers" table="cmdb_network_management_id" category="Auto Generated" show_summary="f" group_fields="t">
+											<columns>
+												<column path="platform" field_set="cmdb_network_management_id" show_in_table="f"/>
+												<column path="device" field_set="cmdb_network_management_id" show_in_table="t" label="Computer"/>
+												<column path="platform_id" field_set="cmdb_network_management_id" show_in_table="t" label="Computer Unique Identifier" />
+												<column path="agent_timestamp" field_set="cmdb_network_management_id" show_in_table="t" hint="Last known contact with the site" />
+												<column path="id" field_set="cmdb_network_management_id" show_in_table="f"/>
+												<column path="device>id" show_in_table="f"/>
+											</columns>
+											<field_sets>
+												<field_set name="cmdb_network_management_id" label="Network Management ID" collapsed="f"/>
+											</field_sets>
+											<attributes>
+												<criteria><![CDATA[ 'device>id' is not empty and 'platform' is "1" ]]></criteria>
+											</attributes>
+										</data_view_info>
+									</related_views>
+								</data_view_info>
+							</related_views>
+						</data_view_info>
+					</configs>
+					<attributes>
+						<configs><![CDATA[dataView:Summary by Reclamation,title:"Summary by Reclamation",description:"These results show the cost savings of applications being uninstalled from target computers. The results are grouped by reclamation plan."]]></configs>
+					</attributes>
+				</menu>
+				<menu name="Summary by Product Version" parent="Setup>Software Reclamation>Reports" component="Data View Grid" icon="icon-software">
+					<configs>
+						<data_view_info name="Reclamation Summary by Product Version" table="cmdb_software_product_version" category="Optimize" show_summary="f" group_fields="t">
+						<columns>
+								<column path="product>publisher" field_set="cmdb_software_product_version" show_in_table="t" label="Publisher"/>
+								<column path="friendly_name" show_in_table="t" label="Software"/>
+								<column field_set="cmdb_software_product_version" show_in_table="f" label="Reclamations">
+									<attributes>
+										<path><![CDATA[_agg:reclamations::Reclamation Computers:" var 'signature>software' is "id" ":COUNT:]]></path>
+									</attributes>
+								</column>
+								<column custom_control="Drill Down" groupBy="computer" data_view="Reclamation Computers" orderDir="ASC" show_in_table="t" label="Uninstalled">
+									<attributes>
+										<path><![CDATA[_agg:software_uninstalled:Total computer count where the software has been uninstalled due to reclamation:Reclamation Computers:" var 'signature>software' is "id" and 'signature>operational' is not t and ( 'user_response' is t or ( 'take_no_response_action' is t and 'reclamation>no_response_action' is 2 ) ) ":COUNT_DISTINCT:computer]]></path>
+										<criteria><![CDATA[ var 'signature>software' is "id" and 'signature>operational' is not t and ( 'user_response' is t or ( 'take_no_response_action' is t and 'reclamation>no_response_action' is 2 ) ) ]]></criteria>
+									</attributes>
+								</column>								
+								<column name="Number" pattern="###,###.###" type="Number Formatter" example="12,345.678" field_set="cmdb_software_product_version" show_in_table="t" label="Software Cost">
+									<attributes>
+										<path><![CDATA[_agg:software_cost:Cost of software:Reclamation Computers:" var 'signature>software>product' is "product" ":AVG:software_liability]]></path>
+									</attributes>
+								</column>
+								<column name="Number" pattern="###,###.###" type="Number Formatter" example="12,345.678" show_in_table="t" label="Cost Savings">
+									<attributes>
+										<path><![CDATA[_calc:cost_savings:Cost savings for this software:local_money:"var software_savings;
+var uninstalled = get(\"Uninstalled\");
+var cost = get(\"Software Cost\");
+											
+if (cost != 0 && uninstalled  != 0)
+{
+	software_savings = cost * uninstalled;
+}
+else
+{
+	software_savings = 0;
+}
+software_savings;":]]></path>
+									</attributes>
+								</column>
+								<column path="product" field_set="cmdb_software_product_version" show_in_table="f"/>
+							</columns>
+							<field_sets>
+								<field_set name="cmdb_software_product_version" label="Software Product Version" collapsed="f"/>
+							</field_sets>
+							<attributes>
+								<criteria><![CDATA[ 'reclamations' greater than 0 ]]></criteria>
+							</attributes>
+						</data_view_info>
+					</configs>
+					<attributes>
+						<configs><![CDATA[dataView:Reclamation Summary by Product Version,title:"Reclamation Summary by Software Product Version",description:"These results show the cost savings of applications being uninstalled from target computers. The results are grouped by Software Product version."]]></configs>
+					</attributes>
+				</menu>
+				<menu name="Find Reclamation Candidates" parent="Setup>Software Reclamation>Reports" component="Data View Grid" icon="icon-software">
+					<configs>
+						<data_view_info name="Reclamation Usage by Software Product Version" table="cmdb_software_product_version" category="Optimize" show_summary="f" group_fields="t">
+							<columns>
+								<column path="product>publisher" show_in_table="t" label="Publisher"/>
+								<column path="friendly_name" show_in_table="t" label="Software"/>
+								<column path="version" show_in_table="t"/>
+								<column path="product" show_in_table="t"/>
+								<column custom_control="Drill Down" groupBy="installed_on" data_view="Reclamation Windows Software Signatures" show_in_table="t" label="Devices">
+									<attributes>
+										<path><![CDATA[_agg:installed:Number of computers with this software product version installed:Reclamation Windows Software Signatures:" var 'software' is "id" and 'operational' is not f ":COUNT_DISTINCT:installed_on]]></path>
+										<criteria><![CDATA[ var 'software' is "id" and 'operational' is not f ]]></criteria>
+									</attributes>
+								</column>
+								<column custom_control="Drill Down" groupBy="installed_on" data_view="Reclamation Windows Software Signatures" show_in_table="t" label="Metered Devices">
+									<attributes>
+										<path><![CDATA[_agg:metered_devices:Number of computers with this software product version installed and metered:Reclamation Windows Software Signatures:" var 'software' is "id" and 'operational' is not f and 'agents' is not empty  ":COUNT_DISTINCT:installed_on]]></path>
+										<criteria><![CDATA[ var 'software' is "id" and 'operational' is not f and 'agents' is not empty  ]]></criteria>
+									</attributes>
+								</column>
+								<column custom_control="Drill Down" groupBy="installed_on" data_view="Reclamation Windows Software Signatures" orderDir="ASC" show_in_table="t" label="Used">
+									<attributes>
+										<path><![CDATA[_agg:used:Number of devices that usage associated with this software:Reclamation Usage by Program Instance:" var 'spkg>software' is "id" and 'spkg>operational' is not f and 'days_used' greater than 0 ":COUNT_DISTINCT:installed_on]]></path>
+										<criteria><![CDATA[ var 'software' is "id" and 'operational' is not f and 'agents' is not empty  and 'software_used' greater than 0 ]]></criteria>
+									</attributes>
+								</column>
+								<column field_set="cmdb_software_product_version" custom_control="Drill Down" groupBy="installed_on" data_view="Reclamation Windows Software Signatures" orderDir="ASC" show_in_table="t" label="Not Used">
+									<attributes>
+										<path><![CDATA[_calc:not_used::integer:"var metered = get(\"Metered Devices\");
+var used = get(\"Used\");
+var notUsed = metered - used;
+notUsed;":]]></path>
+										<criteria><![CDATA[ var 'software' is "id" and 'operational' is not f and 'agents' is not empty  and 'software_used' is 0 ]]></criteria>
+									</attributes>
+								</column>
+								<column name="Number" pattern="###,###.###" type="Number Formatter" example="12,345.678" show_in_table="f" label="Cost">
+									<attributes>
+										<path><![CDATA[_agg:cost:Cost of software product:Software Expense:" var 'software_product' is "product" and 'expense_period' is "1" and ( 'expense_type' ends with "Software Maintenance" or 'expense_type' ends with "Software Subscription" ) ":AVG:local_cost]]></path>
+									</attributes>
+								</column>
+								<column name="Number" pattern="###,###.###" type="Number Formatter" example="12,345.678" show_in_table="t" label="Potential Cost of Unused Software">
+									<attributes>
+										<path><![CDATA[_calc:unused_software_liability:Expense for unused software:local_money:"var software_liability;
+												var unused_devices = get(\"Unused Devices\");
+												var cost = get(\"Cost\");
+												if (cost != 0 && unused_devices != 0)
+													software_liability = cost * unused_devices;
+												else
+													software_liability = 0;
+												software_liability;":cost]]></path>
+									</attributes>
+								</column>								
+							</columns>
+							<scopes>
+								<scope name="Date Range" description="Select date range for usage data to be included." type="specified date range" default_value="within last-90" required="f">
+									<fields>
+										<field path="used|days_used|usage_date"/>
+									</fields>
+								</scope>							
+								<scope name="First Tracked On" description="Select required tracking date range for program to be included" type="specified date range" default_value="older than last-0" required="f">
+									<fields>
+										<field path="metered_devices|agents|created_on"/>
+										<field path="used|days_used|program_instance>created_on"/>
+									</fields>
+								</scope>
+								<scope name="Publisher" description="Select publishers to be included" type="distinct select" required="f">
+									<fields>
+										<field path="product>publisher"/>
+									</fields>
+								</scope>
+								<scope name="Software Products" description="Select software products to be included" type="distinct select" required="f">
+									<fields>
+										<field path="product"/>
+									</fields>
+								</scope>
+								<scope name="Software Signatures" description="Select software signatures to be included" type="text" required="f">
+									<fields>
+										<field path="friendly_name"/>
+									</fields>
+								</scope>
+							</scopes>	
+							<related_views>
+								<data_view_info name="Reclamation Usage by Program Instance" table="cmdb_program_instance" description="Days of usage summarized for software programs. This view is used for aggregation only." category="Optimize" icon="icon-programs" show_summary="t" group_fields="f">
+									<columns>
+										<column path="operational" show_in_table="t"/>
+										<column path="created_on" show_in_table="f"/>
+										<column path="spkg>operational" show_in_table="f" label="Signature Operational"/>
+										<column show_in_table="t" label="Days Used">
+											<attributes>
+												<path><![CDATA[_agg:days_used:Days where usage exceeds minutes threshold:Program Usage by Day without Keystrokes:" var 'program_instance' is "id" and 'minutes_in_use' greater than 0 ":COUNT:]]></path>
+											</attributes>
+										</column>
+										<column path="program" show_in_table="f"/>
+										<column path="spkg" show_in_table="f" label="Software Signature"/>
+										<column path="spkg>software>product" show_in_table="f" label="Software Product"/>
+										<column path="spkg>software" show_in_table="f" label="Software Product Version"/>
+										<column path="installed_on" show_in_table="t"/>
+									</columns>
+									<scopes>
+										<scope name="Usage Date" type="specified date range" default_value="within last-90" required="f">
+											<fields>
+												<field path="days_used|usage_date"/>
+											</fields>
+										</scope>
+									</scopes>
+								</data_view_info>							
+								<data_view_info name="Reclamation Windows Software Signatures" table="cmdb_ci_spkg_windows" description="Displays raw discovered software signature data." category="Optimize" show_summary="f" group_fields="f">
+									<columns>
+										<column path="installed_on" show_in_table="t"/>
+										<column path="publisher>common_name" field_set="cmdb_ci_spkg" show_in_table="f" label="Publisher"/>
+										<column path="software" field_set="cmdb_ci_spkg" show_in_table="t" label="Software"/>
+										<column path="friendly_name" field_set="cmdb_ci_spkg" show_in_table="t" label="Signature"/>
+										<column path="version" show_in_table="t"/>
+										<column show_in_table="f" label="Email">
+											<attributes>
+												<path><![CDATA[_calc:email::string:"var useOwner = get(\"Use Owner True\");
+var usePrimaryUser = get(\"Use User True\");
+var ownerPersonEmail = get(\"Owner Person Email\");
+var ownerUserEmail = get(\"Owner User Email\");
+var primaryPersonEmail = get(\"Primary Person Email\");
+var primaryUserEmail = get(\"Primary User Email\");
+
+var email = null;
+
+if (useOwner > 0)
+{
+    if (ownerPersonEmail != null)
+        email = ownerPersonEmail;
+    else if (ownerUserEmail != null)
+        email = ownerUserEmail;
+}
+
+if (usePrimaryUser > 0 && email == null)
+{
+    if (primaryPersonEmail != null)
+        email = primaryPersonEmail;
+    else if (primaryUserEmail != null)
+        email = primaryUserEmail;    
+}
+
+email;":]]></path>
+											</attributes>
+										</column>																	
+										<column custom_control="Simple Status" show_in_table="t" label="Reclamation Candidate">
+											<attributes>
+				<path><![CDATA[_calc:reclamation_ready:Green = Managed by SMS/SCCM and computer owner email or primary user email exists:string:"var managed = get(\"Managed\");
+var email = get(\"Email\");
+var agtStaleDays = get(\"Agent Stale Days\");
+var agtTimeStamp = get(\"Agent Timestamp\");
+var res = \"R:No\";
+
+if (managed == \"1\" && email != null)
+{
+	if (agtStaleDays == "") agtStaleDays = 0;
+    var staleDate = new java.util.Date();
+    staleDate.setDate(staleDate.getDate() - agtStaleDays);
+    if (agtTimeStamp.getTime() >= staleDate.getTime())
+    {
+        res = \"G:Yes\";
+    }    
+}
+res;":]]></path>
+											</attributes>
+										</column>
+										<column show_in_table="f" label="Managed">
+											<attributes>
+												<path><![CDATA[_agg:managed::Reclamation Managed Computers:" var 'device>id' is "installed_on" ":COUNT:]]></path>
+											</attributes>
+										</column>
+										<column show_in_table="t" label="Message">
+											<attributes>
+				<path><![CDATA[_calc:message:Message regarding candidate computer:string:"var email = get(\"Email\");
+var managed = get(\"Managed\");
+var agtStaleDays = get(\"Agent Stale Days\");
+var agtTimeStamp = get(\"Agent Timestamp\");
+var msg = \"\";
+var cnt = 0;
+
+if (email == null)
+{
+    if (cnt > 0)
+    {
+        msg = msg + \", \";
+    }
+    msg = msg + \"No computer primary user email or owner email found\";
+    cnt++;
+}
+
+if (agtStaleDays == "") agtStaleDays = 0;
+var staleDate = new java.util.Date();
+staleDate.setDate(staleDate.getDate() - agtStaleDays);
+
+if (managed == \"0\" || (agtTimeStamp.getTime() < staleDate.getTime()))
+{
+    if (cnt > 0)
+    {
+        msg = msg + \", \";
+    }
+    msg = msg + \"Computer not managed by SMS/SCCM\";
+}
+
+if (msg == \"\")
+	msg = "Ready";
+
+msg;":]]></path>
+											</attributes>
+										</column>																		
+										<column path="package_guid" field_set="cmdb_ci_spkg_windows" show_in_table="t" label="Signature Guid"/>
+										<column path="os" show_in_table="f"/>
+										<column path="operational" show_in_table="f"/>
+										<column path="software>product" show_in_table="f" label="Software Product"/>
+										<column show_in_table="f" label="First Tracked On">
+											<attributes>
+												<path><![CDATA[_agg:agents:Date software was first tracked:Usage by Program Instance:" var 'spkg' is "id" and 'operational' is not f ":MIN:created_on]]></path>
+											</attributes>
+										</column>
+										<column show_in_table="f" label="Software Used">
+											<attributes>
+												<path><![CDATA[_agg:software_used:Software product version used?:Program Usage by Day without Keystrokes:" var 'program_instance>spkg>software' is "software" and 'program_instance>spkg>operational' is t and var 'used_from' is "installed_on" and 'minutes_in_use' greater than 0 ":COUNT:]]></path>
+											</attributes>
+										</column>
+										<column path="installed_on>cmdb_ci_computer.primary_user>person>email" field_set="cmdb_ci_computer" show_in_table="f" label="Primary Person Email"/>
+										<column path="installed_on>cmdb_ci_computer.primary_user>email" field_set="cmdb_ci_computer" show_in_table="f" label="Primary User Email"/>
+										<column path="installed_on>owner>person>email" field_set="cmdb_ci" show_in_table="f" label="Owner Person Email"/>
+										<column path="installed_on>owner>email" field_set="cmdb_ci" show_in_table="f" label="Owner User Email"/>	
+										<column show_in_table="f" label="Use Owner True">
+											<attributes>
+												<path><![CDATA[_agg:use_owner_true:Does Reclamation configuration have 'Use Owner' enabled?:Reclamation Configuration:" 'use_owner' is t ":COUNT:]]></path>
+											</attributes>
+										</column>
+										<column show_in_table="f" label="Use User True">
+											<attributes>
+												<path><![CDATA[_agg:use_primary_user_true:Does Reclamation configuration have 'Use Primary User' enabled?:Reclamation Configuration:" 'use_user' is t ":COUNT:]]></path>
+											</attributes>
+										</column>
+										<column field_set="cmdb_software_product_version" show_in_table="f" label="Agent Stale Days">
+											<attributes>
+												<path><![CDATA[_agg:agent_stale_factor:How many days without agent contact render computer as scale:Reclamation Configuration:" 'is_enabled' is t or 'is_enabled' is f ":MAX:agent_stale_days]]></path>
+											</attributes>
+										</column>
+										<column show_in_table="f" label="Agent Timestamp">
+											<attributes>
+												<path><![CDATA[_agg:agent_timestamp:Timestamp of last agent contact/refresh:Reclamation Managed Computers:" var 'device' is "installed_on" ":MAX:agent_timestamp]]></path>
+											</attributes>
+										</column>
+										<column name="Number" pattern="###,###.###" type="Number Formatter" example="12,345.678" show_in_table="f" label="Cost">
+											<attributes>
+												<path><![CDATA[_agg:cost:Cost of software product:Software Expense:" var 'software_product' is "software>product" and 'expense_period' is "1" and ( 'expense_type' ends with "Software Maintenance" or 'expense_type' ends with "Software Subscription" ) ":AVG:local_cost]]></path>
+											</attributes>
+										</column>
+									</columns>
+									<related_items>
+										<related_item referrer_table="cmdb_program_instance" referrer_column="spkg" data_view="Program Instance" label="Program Instances"/>
+									</related_items>
+									<scopes>
+										<scope name="Date Range" description="Select date range for usage data to be included." type="specified date range" default_value="within last-90" required="f">
+											<fields>
+												<field path="software_used|usage_date"/>
+											</fields>
+										</scope>
+										<scope name="Publisher" description="Select publishers to be included" type="distinct select" required="f">
+											<fields>
+												<field path="publisher>common_name"/>
+											</fields>
+										</scope>
+										<scope name="Software Products" description="Select software products to be included" type="distinct select" required="f">
+											<fields>
+												<field path="software>product"/>
+											</fields>
+										</scope>
+										<scope name="Software Signatures" description="Select software signatures to be included" type="distinct select" required="f">
+											<fields>
+												<field path="friendly_name"/>
+											</fields>
+										</scope>
+									</scopes>	
+									<custom_filters>
+										<custom_filter name="Reclamation Candidate">
+											<attributes>
+												<criteria><![CDATA[ 'managed' greater than 0 and 'installed_on>cmdb_ci_computer.primary_user>email' is not empty  ]]></criteria>
+											</attributes>
+										</custom_filter>
+										<custom_filter name="Not a Reclamation Candidate">
+											<attributes>
+												<criteria><![CDATA[ 'managed' is 0 or 'installed_on>cmdb_ci_computer.primary_user>email' is empty  ]]></criteria>
+											</attributes>
+										</custom_filter>
+									</custom_filters>
+									<field_sets>
+										<field_set name="cmdb_ci_spkg" label="Software" collapsed="f"/>
+										<field_set name="cmdb_ci_spkg_windows" label="Windows Software" collapsed="f"/>
+									</field_sets>
+									<attributes>
+										<criteria><![CDATA[ 'operational' is not f and 'os' is not t ]]></criteria>
+									</attributes>
+								</data_view_info>
+							</related_views>
+							<attributes>
+								<criteria><![CDATA[ 'friendly_name' is not empty  ]]></criteria>
+							</attributes>
+						</data_view_info>
+					</configs>
+					<attributes>
+						<configs><![CDATA[dataView:Reclamation Usage by Software Product Version,title:"Reclamation Candidates",description:"You can use this report to find unused software and create a reclamation plan."]]></configs>
+					</attributes>
+				</menu>
+			</children>
+		</menu>
+		<menu name="Plans" parent="Setup>Software Reclamation" component="Data View Grid" icon="icon-table_header">
+			<configs>
+				<data_view_info name="Reclamation Plans" table="opz_reclamation" category="Optimize" show_summary="f" group_fields="t">
+					<columns>
+						<column path="name" show_in_table="t"/>
+						<column path="description" show_in_table="t"/>
+						<column path="enabled" show_in_table="t"/>
+						<column path="approved" field_set="opz_reclamation" show_in_table="t" label="Submitted to SCCM"/>
+						<column path="sccm_sent_date" field_set="opz_reclamation" show_in_table="t" label="Submitted to SCCM On"/>
+						<column path="approved_by" field_set="opz_reclamation" custom_control="Drill Down" data_view="Reclamation Computers" show_in_table="t" label="Submitted to SCCM By">
+							<attributes>
+								<criteria><![CDATA[ var 'reclamation' is "id" and 'computer' is not empty  ]]></criteria>
+							</attributes>
+						</column>
+						<column custom_control="RAG" min="0" max="100" red="74" green="75" perc="true" show_in_table="t" label="User Response %">
+							<attributes>
+								<path><![CDATA[_calc:percent_completes:The candidate computers / (users confirmed + users declined):string:"var p = 0;
+var candidates = get(\"Candidate Computers\");
+var responses_confirmed = get(\"Users Confirmed\")
+var responses_declined = get(\"Users Declined\")
+if (candidates != 0 && (responses_confirmed != 0 || responses_declined != 0))
+{
+p = ( (responses_confirmed + responses_declined) /candidates) * 100;
+}
+if (p>100) p = 100;
+p;":]]></path>
+							</attributes>
+						</column>						
+						<column field_set="opz_reclamation" custom_control="Drill Down" data_view="Reclamation Computers" show_in_table="t" label="Computers Submitted">
+							<attributes>
+								<path><![CDATA[_agg:total_submitted:Total computers included in this reclamation plan:Reclamation Computers:" var 'reclamation' is "id" and var 'reclamation' is "id" ":COUNT:]]></path>
+								<criteria><![CDATA[ var 'reclamation' is "id" ]]></criteria>
+							</attributes>
+						</column>
+						<column field_set="opz_reclamation" custom_control="Drill Down" data_view="Reclamation Computers" show_in_table="t" label="Candidate Computers">
+							<attributes>
+								<path><![CDATA[_agg:total_candidates:Total computers in this plan that are managed by SCCM and have a primary user email:Reclamation Computers:" var 'reclamation' is "id" and var 'reclamation' is "id" and 'computer>primary_user>email' is not empty  and 'is_sccm_managed' greater than 0 ":COUNT:]]></path>
+								<criteria><![CDATA[ var 'reclamation' is "id" and 'computer>primary_user>email' is not empty  and 'is_sccm_managed' greater than 0 ]]></criteria>
+							</attributes>
+						</column>
+						<column custom_control="Drill Down" data_view="Reclamation Computers" show_in_table="t" label="Users Confirmed">
+							<attributes>
+								<path><![CDATA[_agg:total_confirmed:Total computers confirmed by user to submit to SCCM or No Reponse Action is set to uninstall:Reclamation Computers:" var 'reclamation' is "id" and ( 'user_response' is t or 'take_no_response_action' is t ) ":COUNT:]]></path>
+								<criteria><![CDATA[ var 'reclamation' is "id" and ( 'user_response' is t or 'take_no_response_action' is t ) ]]></criteria>
+							</attributes>
+						</column>
+						<column custom_control="Drill Down" data_view="Reclamation Computers" show_in_table="t" label="Users Declined">
+							<attributes>
+								<path><![CDATA[_agg:total_declined:Total computers declined to submit to SCCM or No Response Action is set to not uninstall:Reclamation Computers:" var 'reclamation' is "id" and ( 'user_response' is f or 'take_no_response_action' is f ) ":COUNT:]]></path>
+								<criteria><![CDATA[ var 'reclamation' is "id" and ( 'user_response' is f or 'take_no_response_action' is f ) ]]></criteria>
+							</attributes>
+						</column>					
+						<column show_in_table="t" label="No Response Action">
+							<attributes>
+								<path><![CDATA[_calc:no_response_action_string::string:"var result = null;
+var noRespAction = get(\"No Response Action Value\");
+if (noRespAction == null || noRespAction == 1)
+{
+    result = \"Do not uninstall\";
+}
+else if(noRespAction == 2)
+{
+    result = \"Proceed to uninstall\";
+}
+result;":]]></path>
+							</attributes>
+						</column>
+						<column path="no_response_action" field_set="opz_reclamation" show_in_table="f" label="No Response Action Value"/>
+						<column path="admin_email" field_set="opz_reclamation" show_in_table="t" label="Plan Email"/>
+						<column path="sccm_collection_name" show_in_table="t"/>
+						<column path="sccm_collection_desc" show_in_table="t"/>
+						<column path="allow_advertisements" show_in_table="t" label="Allow Advertisements"/>
+						<column path="require_advertisements" show_in_table="t" label="Mandatory Advertisements"/>
+						<column path="sccm_deployment_name" field_set="opz_reclamation" show_in_table="t" label="Advertisement Name"/>
+						<column path="sccm_deployment_desc" field_set="opz_reclamation" show_in_table="t" label="Advertisement Description"/>
+						<column path="sccm_package" field_set="opz_reclamation" show_in_table="t" label="SCCM Package"/>
+						<column path="sccm_program" show_in_table="t"/>
+						<column path="sccm_allow_restarts" show_in_table="t"/>
+						<column path="signature_spv" field_set="opz_reclamation" show_in_table="t" label="Software"/>
+						<column path="signature_name" field_set="opz_reclamation" show_in_table="t" label="Signature"/>
+						<column path="signature_guid" show_in_table="t"/>
+						<column path="updated_on" field_set="opz_reclamation" show_in_table="f"/>
+						<column path="updated_by" field_set="opz_reclamation" show_in_table="f"/>
+						<column path="sccm_config" show_in_table="f"/>
+						<column path="mod_count" field_set="opz_reclamation" show_in_table="f"/>
+						<column path="id" show_in_table="f"/>
+						<column path="created_on" show_in_table="t"/>
+						<column path="created_by" show_in_table="t"/>
+						<column path="email_expiration_days" show_in_table="t"/>
+						<column path="email_max_send_attempts" show_in_table="t"/>
+						<column path="email_config" show_in_table="f"/>
+						<column path="email_send_wait_days" show_in_table="t"/>
+						<column path="email_groom_days" show_in_table="t"/>
+					</columns>
+					<field_sets>
+						<field_set name="opz_reclamation" label="Reclamation" collapsed="f"/>
+					</field_sets>
+					<custom_filters>
+						<custom_filter name="Submitted">
+							<attributes>
+								<criteria><![CDATA[ 'approved' is t ]]></criteria>
+							</attributes>
+						</custom_filter>
+						<custom_filter name="Unsubmitted">
+							<attributes>
+								<criteria><![CDATA[ 'approved' is not t ]]></criteria>
+							</attributes>
+						</custom_filter>
+					</custom_filters>
+				</data_view_info>
+			</configs>
+			<children>
+				<menu name="Submitted" parent="Setup>Software Reclamation>Plans" component="Data View Grid" icon="icon-table_footer">
+					<attributes>
+						<configs><![CDATA[dataView:Reclamation Plans,customView:Submitted,title:"Submitted to SMS/SCCM",description:"This is a list of reclamation plans that have been submitted to SMS/SCCM."]]></configs>
+					</attributes>
+				</menu>
+				<menu name="Unsubmitted" parent="Setup>Software Reclamation>Plans" component="Data View Grid" icon="icon-table">
+					<attributes>
+						<configs><![CDATA[dataView:Reclamation Plans,customView:Unsubmitted,title:"Not Submitted to SMS/SCCM",description:"This is a list of reclamation plans that have not been submitted to SMS/SCCM. The email responses are still being collected."]]></configs>
+					</attributes>
+				</menu>
+			</children>
+			<attributes>
+				<configs><![CDATA[dataView:Reclamation Plans,title:"All Reclamation Plans",description:"This is a list of reclamation plans that have been created."]]></configs>
+			</attributes>
+		</menu>
+	</children>
+</menu>

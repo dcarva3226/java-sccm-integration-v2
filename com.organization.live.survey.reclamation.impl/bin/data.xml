@@ -1,0 +1,24 @@
+<dump>
+	<keys>
+		<key table="sys_sch_daily_schedule">
+   			<column>name</column>
+  		</key>
+  		<key table="sys_sch_reclamation_job">
+   			<column>name</column>
+  		</key>
+  		<key table="sys_user">
+   			<column>user_name</column>
+  		</key>
+  		<key table="sys_sch_idempotence_type">
+   			<column>name</column>
+  		</key>
+ 	</keys>
+ 	<refs>
+ 		<sys_user id="1" user_name="admin" />
+  		<sys_sch_idempotence_type id="1" name="Global" />
+	</refs>
+ 	<data>
+  		<sys_sch_reclamation_job id="1" name="Reclamation Implementation Service On Start" digest="Reclamation Implementation Service On Start" idempotence_type_id="1"/>
+  		<sys_sch_daily_schedule name="Reclamation Implementation Service On Start" active="true" sys_user_id="1" job_id="1" time="08:00:00" repeat_day="1"/>
+ 	</data>
+</dump>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+		
+    <bean id="reclamationUIInstaller" class="com.organization.live.survey.reclamation.ui.installer.Installer">
+    	<property name="serviceFactory" ref="serviceFactory"/>
+    </bean>	
+	
+	<bean id="createReclamationAction" class="com.organization.live.survey.reclamation.ui.action.CreateReclamationAction"/>
+	<bean id="reclamationPlanWizard" class="com.organization.live.survey.reclamation.ui.component.ReclamationPlanWizard"/>
+	<bean id="uninstallProvider" class="com.organization.live.survey.reclamation.ui.component.SCCMUninstallProvider" />
+
+	<bean id="initSCCMUninstallAction" class="com.organization.live.survey.reclamation.ui.action.InitSCCMUninstallAction">
+		<property name="component" ref="uninstallProvider" />
+		<property name="loggerFactory" ref="loggerFactory"/>
+	</bean>
+	
+	<bean id="createUninstallSCCMPackageAction" class="com.organization.live.survey.reclamation.ui.action.CreateUninstallSCCMPackageAction">
+		<property name="component" ref="uninstallProvider" />
+	</bean>
+
+	<bean id="uninstallSCCMPackageListener" class="com.organization.live.survey.reclamation.ui.action.UninstallSCCMPackageListener"/>
+	<bean id="uninstallSCCMPackageAction" class="com.organization.live.survey.reclamation.ui.action.UninstallSCCMPackageAction">
+		<property name="component" ref="uninstallProvider" />
+		<property name="loggerFactory" ref="loggerFactory"/>
+		<property name="uninstallSCCMPackageListener" ref="uninstallSCCMPackageListener"/>
+	</bean>			
+		
+<!-- Scene 1 -->
+
+	<bean id="scene1Initializer" class="com.organization.live.survey.reclamation.ui.component.scene1.Scene1Initializer"/>
+	<bean id="preSelectReclamationDataHook" class="com.organization.live.survey.reclamation.ui.component.scene1.PreSelectReclamationDataHook" />
+		
+<!-- Scene 2 -->
+	
+	<bean id="scene2Initializer" class="com.organization.live.survey.reclamation.ui.component.scene2.Scene2Initializer"/>
+	
+<!-- Scene 3 -->	
+	
+	<bean id="scene3Initializer" class="com.organization.live.survey.reclamation.ui.component.scene3.Scene3Initializer"/>
+	<bean id="setProgramsDataLoader" class="com.organization.live.survey.reclamation.ui.dataloader.SetProgramsDataLoader" />
+				
+<!-- Scene 4 -->
+
+	<bean id="scene4Initializer" class="com.organization.live.survey.reclamation.ui.component.scene4.Scene4Initializer"/>
+	
+<!-- Scene 5 -->
+
+	<bean id="scene5Initializer" class="com.organization.live.survey.reclamation.ui.component.scene5.Scene5Initializer"/>
+	<bean id="setEmailPropertiesAction" class="com.organization.live.survey.reclamation.ui.component.scene5.SetEmailPropertiesAction" />
+	
+<!-- Scene 6 -->	
+	
+	<bean id="scene6Initializer" class="com.organization.live.survey.reclamation.ui.component.scene6.Scene6Initializer"/>
+	
+	<bean id="finishReclamationAction" class="com.organization.live.survey.reclamation.ui.action.FinishReclamationAction">
+		<property name="loggerFactory" ref="loggerFactory"/>
+	</bean>	
+		
+</beans>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:osgi="http://www.springframework.org/schema/osgi"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                      http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd">
+
+    <osgi:service ref="reclamationUIInstaller" interface="com.organization.live.plugin.Installable"/>
+	<osgi:service ref="createReclamationAction" interface="com.organization.live.ui.service.action.Action"/>
+	<osgi:service ref="reclamationPlanWizard" interface="com.organization.live.ui.service.component.Component"/>
+	<osgi:service ref="uninstallSCCMPackageAction" interface="com.organization.live.ui.service.action.Action"/>	
+	<osgi:service ref="initSCCMUninstallAction" interface="com.organization.live.ui.service.action.Action"/>
+	<osgi:service ref="createUninstallSCCMPackageAction" interface="com.organization.live.ui.service.action.Action"/>
+	<osgi:service ref="uninstallProvider" interface="com.organization.live.ui.service.component.Component"/>
+
+	<osgi:service ref="scene1Initializer" interface="com.organization.live.ui.service.action.Action"/>
+	<osgi:service ref="preSelectReclamationDataHook" interface="com.organization.live.ui.service.action.ActionHook"/>
+		
+	<osgi:service ref="scene2Initializer" interface="com.organization.live.ui.service.action.Action"/>
+
+	<osgi:service ref="scene3Initializer" interface="com.organization.live.ui.service.action.Action"/>
+	<osgi:service ref="setProgramsDataLoader" interface="com.organization.live.ui.service.action.DataLoader"/>
+
+	<osgi:service ref="scene4Initializer" interface="com.organization.live.ui.service.action.Action"/>
+
+	<osgi:service ref="scene5Initializer" interface="com.organization.live.ui.service.action.Action"/>
+	<osgi:service ref="setEmailPropertiesAction" interface="com.organization.live.ui.service.action.Action"/>
+	
+	<osgi:service ref="scene6Initializer" interface="com.organization.live.ui.service.action.Action"/>
+	
+	<osgi:service ref="finishReclamationAction" interface="com.organization.live.ui.service.action.Action"/>
+
+	<osgi:service ref="uninstallSCCMPackageListener" interface="com.organization.live.pad.jms.DiscoveryListener"/>
+	
+	<osgi:reference id="loggerFactory" interface="com.organization.live.logger.LoggerFactory"/>
+	<osgi:reference id="serviceFactory" interface="com.organization.live.ui.service.ServiceFactory"/>
+
+</beans>

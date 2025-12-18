@@ -1,0 +1,74 @@
+<exclude_actions>
+	
+	<exclude_action view="Reclamation Activity Logs" action="CreateImportAction"/>
+	<exclude_action view="Reclamation Activity Logs" action="CreateNewDataViewAction"/>
+	<exclude_action view="Reclamation Activity Logs" action="DeleteDataViewsAction"/>
+	<exclude_action view="Reclamation Activity Logs" action="EditDataViewAction"/>
+	<exclude_action view="Reclamation Activity Logs" action="SaveDataViewsAction"/>
+	
+	<exclude_action view="Reclamation Computers" action="CreateImportAction"/>
+	<exclude_action view="Reclamation Computers" action="CreateNewDataViewAction"/>
+	<exclude_action view="Reclamation Computers" action="DeleteDataViewsAction"/>
+	<exclude_action view="Reclamation Computers" action="EditDataViewAction"/>
+	<exclude_action view="Reclamation Computers" action="SaveDataViewsAction"/>
+	
+	<exclude_action view="Reclamation Computer Status" action="CreateImportAction"/>
+	<exclude_action view="Reclamation Computer Status" action="CreateNewDataViewAction"/>
+	<exclude_action view="Reclamation Computer Status" action="DeleteDataViewsAction"/>
+	<exclude_action view="Reclamation Computer Status" action="EditDataViewAction"/>
+	<exclude_action view="Reclamation Computer Status" action="SaveDataViewsAction"/>
+	
+	<exclude_action view="Reclamation Managed Computers" action="CreateImportAction"/>
+	<exclude_action view="Reclamation Managed Computers" action="CreateNewDataViewAction"/>
+	<exclude_action view="Reclamation Managed Computers" action="DeleteDataViewsAction"/>
+	<exclude_action view="Reclamation Managed Computers" action="EditDataViewAction"/>
+	<exclude_action view="Reclamation Managed Computers" action="SaveDataViewsAction"/>
+	
+	<exclude_action view="Reclamation Management Packages" action="CreateImportAction"/>
+	<exclude_action view="Reclamation Management Packages" action="CreateNewDataViewAction"/>
+	<exclude_action view="Reclamation Management Packages" action="DeleteDataViewsAction"/>
+	<exclude_action view="Reclamation Management Packages" action="EditDataViewAction"/>
+	<exclude_action view="Reclamation Management Packages" action="SaveDataViewsAction"/>
+	
+	<exclude_action view="Reclamation Management Programs" action="CreateImportAction"/>
+	<exclude_action view="Reclamation Management Programs" action="CreateNewDataViewAction"/>
+	<exclude_action view="Reclamation Management Programs" action="DeleteDataViewsAction"/>
+	<exclude_action view="Reclamation Management Programs" action="EditDataViewAction"/>
+	<exclude_action view="Reclamation Management Programs" action="SaveDataViewsAction"/>
+	
+	<exclude_action view="Reclamation By Software Product Version" action="CreateImportAction"/>
+	<exclude_action view="Reclamation By Software Product Version" action="CreateNewDataViewAction"/>
+	<exclude_action view="Reclamation By Software Product Version" action="DeleteDataViewsAction"/>
+	<exclude_action view="Reclamation By Software Product Version" action="EditDataViewAction"/>
+	<exclude_action view="Reclamation By Software Product Version" action="SaveDataViewsAction"/>
+	
+	<exclude_action view="Summary by Reclamation" action="CreateImportAction"/>
+	<exclude_action view="Summary by Reclamation" action="CreateNewDataViewAction"/>
+	<exclude_action view="Summary by Reclamation" action="DeleteDataViewsAction"/>
+	<exclude_action view="Summary by Reclamation" action="EditDataViewAction"/>
+	<exclude_action view="Summary by Reclamation" action="SaveDataViewsAction"/>
+	
+	<exclude_action view="Reclamation Summary by Product Version" action="CreateImportAction"/>
+	<exclude_action view="Reclamation Summary by Product Version" action="CreateNewDataViewAction"/>
+	<exclude_action view="Reclamation Summary by Product Version" action="DeleteDataViewsAction"/>
+	<exclude_action view="Reclamation Summary by Product Version" action="EditDataViewAction"/>
+	<exclude_action view="Reclamation Summary by Product Version" action="SaveDataViewsAction"/>
+	
+	<exclude_action view="Reclamation Windows Software Signatures" action="CreateImportAction"/>
+	<exclude_action view="Reclamation Windows Software Signatures" action="CreateNewDataViewAction"/>
+	<exclude_action view="Reclamation Windows Software Signatures" action="DeleteDataViewsAction"/>
+	<exclude_action view="Reclamation Windows Software Signatures" action="EditDataViewAction"/>
+	<exclude_action view="Reclamation Windows Software Signatures" action="SaveDataViewsAction"/>
+
+	<exclude_action view="Reclamation Configuration" action="CreateNewDataViewAction"/>
+	<exclude_action view="Reclamation Configuration" action="DeleteDataViewsAction"/>
+	
+	<exclude_action view="Reclamations" action="CreateNewDataViewAction"/>
+	<exclude_action view="Reclamations" action="DeleteDataViewsAction"/>
+
+	<exclude_action view="Reclamation Plans" action="CreateNewDataViewAction"/>
+	<exclude_action view="Reclamation Plans" action="DeleteDataViewsAction"/>
+	<exclude_action view="Reclamation Plans" action="EditDataViewAction"/>
+	<exclude_action view="Reclamation Plans" action="SaveDataViewsAction"/>	
+		
+</exclude_actions>

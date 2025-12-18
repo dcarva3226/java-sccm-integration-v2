@@ -1,0 +1,93 @@
+<schema xmlns="http://www.organization.com/2012/02/10/DatabaseSchema"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.organization.com/2012/02/10/DatabaseSchema DatabaseSchema.xsd ">
+	<tables>
+	    <table name="opz_reclamation" label="Reclamation" plural="Reclamations" hint="Reclamation">
+	      <columns>
+	        <column name="admin_email"             type="string" mandatory="true" show_by_default="true" label="Admin Email" plural="Admin Email" hint="Admin Email for Reclamation"/>
+			<column name="allow_advertisements"    type="boolean" mandatory="true" show_by_default="true" label="Allow SCCM Advertisments" plural="Allow SCCM Advertisments" hint="Allow SCCM Advertisments"/>
+	        <column name="approved"            	   type="boolean" show_by_default="true" mandatory="true" is_protected="true" label="Approved and sent to SMS/SCCM" plural="Approved and Sent to SMS/SCCM" hint="Approved and sent to SMS/SCCM"/>
+	        <column name="approved_by"             type="reference" reference="sys_user" show_by_default="true" label="Approved By" plural="Approved By" hint="Approved By"/>
+	        <column name="description"             type="string" max_length="1000" show_by_default="true" label="Description" plural="Descriptions" hint="Reclamation Description"/>
+	        <column name="email_config"            type="reference" mandatory="true" reference="opz_reclamation_email_config" show_by_default="true" label="Email Config" plural="Email Config" hint="Email Config"/>
+	        <column name="email_expiration_days"   type="integer" mandatory="true" show_by_default="true" label="Email Expiration Days" plural="Email Expiration Days" hint="Email Expiration Days"/>
+	        <column name="email_groom_days"        type="integer" mandatory="true" show_by_default="true" label="Email Groom Days" plural="Email Groom Days" hint="Email Groom Days"/>
+	        <column name="email_max_send_attempts" type="integer" mandatory="true" show_by_default="true" label="Email Send Attempts" plural="Email Send Attempts" hint="Email Send Attempts"/>
+	        <column name="email_send_wait_days"    type="integer" mandatory="true" show_by_default="true" label="Send Email Wait Days" plural="Send Email Wait Days" hint="Send Email Wait Days"/>
+	        <column name="enabled"            	   type="boolean" mandatory="true" show_by_default="true" label="Enabled" plural="Enabled" hint="Is this Plan Enabled?"/>
+	        <column name="name"                    type="string" mandatory="true" show_by_default="true" label="Name" plural="Names" hint="Reclamation Name"/>
+	        <column name="no_response_action"      type="integer" show_by_default="false" label="No Response Action" plural="No Response Actions" hint="No Response Action"/>
+	        <column name="require_advertisements"  type="boolean" show_by_default="true" label="Require SCCM Advertisments" plural="Require SCCM Advertisments" hint="Require SCCM Advertisments"/>
+	        <column name="sccm_collection_desc"    type="string" max_length="1000" show_by_default="true" label="Collection Description" plural="Collection Descriptions" hint="Collection Description Submit to SCCM"/>
+	        <column name="sccm_collection_name"    type="string" mandatory="true" show_by_default="true" label="Collection Name" plural="Collection Names" hint="Collection Name to Submit to SCCM"/>
+			<column name="sccm_config"             type="reference" mandatory="true" reference="opz_reclamation_sccm_config" show_by_default="true" label="SCCM Config" plural="SCCM Config" hint="SCCM Config"/>
+			<!-- deployment is just another name for advertisement -->
+			<column name="sccm_allow_restarts"     type="boolean" show_by_default="true" label="Allow Computer Restarts" plural="Allow Computer Restarts" hint="Allow SCCM Advertisement to Restart Computer"/>
+	        <column name="sccm_deployment_desc"    type="string" max_length="1000" show_by_default="true" label="Deployment Description" plural="Deployment Descriptions" hint="Deployment Description Submit to SCCM"/>
+	        <column name="sccm_deployment_name"    type="string" show_by_default="true" label="Deployment Name" plural="Deployment Names" hint="Deployment Name to Submit to SCCM"/>
+			<column name="sccm_package"            type="reference" reference="cmdb_management_package" show_by_default="true" label="SCCM Package Id" plural="SCCM Package Id" hint="SCCM Package to Use for Deployment"/>
+			<column name="sccm_program"            type="reference" reference="cmdb_management_program" show_by_default="true" label="SCCM Program" plural="SCCM Programs" hint="SCCM Program to Use for Deployment"/>
+	        <column name="sccm_sent_date"          type="timestamp" show_by_default="true" label="Date Submitted to SCCM" plural="Date Submitted to SCCM" hint="Date Submitted to SCCM"/>
+			<column name="signature_guid"          type="string" max_length="255" show_by_default="true" label="Signature GUID" plural="Signature GUID" hint="Signature GUID"/>
+			<!-- I entered a string name here, not ref, because then it would be a one to many relationship -->
+			<column name="signature_name"          type="string" mandatory="true" max_length="255" show_by_default="true" label="Signature Name" plural="Signature Names" hint="Signature Name"/>
+			<!-- I tried adding just the SPV id but it won't me enter it as its a system field -->
+			<column name="signature_spv"           type="string" max_length="255" show_by_default="true" label="Software Product Version" plural="Software Product Versions" hint="Software Product Version"/>
+	      </columns>
+	    </table>
+	    <table name="opz_reclamation_computer" label="Reclamation computer" plural="Reclamation computers" hint="Reclamation computer">
+	      <columns>
+	        <column name="computer"                type="reference" reference="cmdb_ci_computer" mandatory="true" show_by_default="true" label="Computer" plural="Computers" hint="Computer"/>
+	        <column name="email_confirmed"	       type="boolean" show_by_default="true" label="Confirmed Email Response" plural="Confirmed Email Responses" hint="Confirmed Email Response"/>
+	        <column name="email_send_attempts" 	   type="integer" show_by_default="true" label="Email Send Attempts" plural="Email Send Attempts" hint="Email Send Attempts"/>
+	        <column name="reclamation"             type="reference" reference="opz_reclamation" mandatory="true" show_by_default="true" label="Reclamation" plural="Reclamations" hint="Reclamation"/>
+			<column name="signature"               type="reference" reference="cmdb_ci_spkg_windows" show_by_default="false" label="Signature Id" plural="Signature Ids" hint="Signature"/>	  
+	        <column name="take_no_response_action" type="boolean" show_by_default="true" label="Force Uninstall Action if No Response" plural="Force Uninstall Action if No Responses" hint="Force uninstall action if contact attempt threshold is met."/>
+	        <column name="user_response"           type="boolean" show_by_default="true" label="User Response" plural="User Responses" hint="User Reponse of Yes or No"/>	
+	      </columns>
+	    </table>
+	    <table name="opz_reclamation_email" label="Reclamation email" plural="Reclamation emails" hint="Reclamation email">
+	      <columns>
+	        <column name="contact_attempt"         type="integer" show_by_default="true" label="Contact Attempt" plural="Contact Attempts" hint="Contact Attempt"/>       
+	        <column name="email_sent_time"         type="timestamp" mandatory="true" show_by_default="true" label="Email Sent Time" plural="Email Sent Times" hint="Email Sent Time"/>
+	        <column name="reclamation_computer"    type="reference" reference="opz_reclamation_computer" mandatory="true" show_by_default="true" label="Reclamation Computer" plural="Reclamation Computer" hint="Reclamation Computer"/>
+	        <column name="response_time"           type="datetime" show_by_default="true" label="Response Time" plural="Response Times" hint="Response Time"/>
+	        <column name="system_email"            type="reference" reference="sys_message_email" mandatory="true" show_by_default="true" label="System Email" plural="System Emails" hint="System Email"/>
+	        <column name="token"                   type="string" mandatory="true" show_by_default="true" label="Token" plural="Tokens" hint="Token"/>
+	      </columns>
+	    </table>
+	    <table name="opz_reclamation_email_config" label="Reclamation email template" plural="Reclamation email templates" hint="Reclamation email template">
+	      <columns>
+	        <column name="body"                    type="string" max_length="5000" show_by_default="true" label="Body" plural="Body" hint="Body"/>
+	        <column name="subject"                 type="string" max_length="250" show_by_default="true" label="Email Subject" plural="Email Subjects" hint="Email Subject"/>
+	        <column name="template"                type="boolean" show_by_default="false" label="Template" plural="Template" hint="Template"/>	
+	      </columns>
+	    </table>
+	    <table name="opz_reclamation_sccm_config" label="Reclamation SCCM configuration" plural="Reclamation SCCM configurations" hint="Saved SCCM configurations">
+	      <columns>
+	        <column name="site_code"               type="string" show_by_default="true" label="Site Code" plural="Site Codes" hint="Site Code"/>
+	        <column name="site_server"             type="ip_address" mandatory="true" show_by_default="true" label="Site Server IP Address" plural="Site Server IP Addresses" hint="Site Server IP Address"/>
+	      </columns>
+	    </table>                    
+	    <table name="opz_reclamation_config" label="Reclamation configuration" plural="Reclamation configuration" hint="Reclamation configuration">
+	      <columns>
+  			<column name="name"    	   					   type="string"  mandatory="true" show_by_default="true" default="" label="Name" plural="Default Reclamation Configuration" hint="Default Reclamation Configuration"/>	      
+			<column name="agent_stale_days"    			   type="integer" mandatory="false" show_by_default="true" label="Agent Stale Days" plural="Agent Stale Days" hint="How Many Days without Agent Contact Renders Computer as Stale"/>
+			<column name="default_allow_restarts"     	   type="boolean" mandatory="false" show_by_default="true" label="Default Allow Computer Restarts" plural="Allow Computer Restarts" hint="Allow SCCM Advertisement to Restart Computer"/>
+	        <column name="default_email_expiration_days"   type="integer" mandatory="false" show_by_default="true" label="Default Email Expiration Days" plural="Default Email Expiration Days" hint="Default Email Expiration Days"/>
+	        <column name="default_email_groom_days"        type="integer" mandatory="false" show_by_default="true" label="Default Email Groom Days" plural="Default Email Groom Days" hint="Default Email Groom Days"/>
+	        <column name="default_email_send_wait_days"    type="integer" mandatory="false" show_by_default="true" label="Default Email Send Wait Days" plural="Default Email Send Wait Days" hint="Default Email Send Wait Days"/>
+	        <column name="default_max_email_attempts" 	   type="integer" mandatory="false" show_by_default="true" label="Default Email Send Attempts" plural="Default Email Send Attempts" hint="Default Email Send Attempts"/>
+			<column name="use_owner" 	   				   type="boolean" mandatory="false" show_by_default="true" label="Use Owner" plural="User Owner" hint="Get Email Addresses from Computer Owner"/>	        
+			<column name="use_user" 	   				   type="boolean" mandatory="false" show_by_default="true" label="Use Primary User" plural="User Primary User" hint="Get Email Addresses from Computer Primary User"/>			
+	        <column name="logo"							   type="image"   mandatory="false" show_by_default="true" label="Logo" plural="logo" hint="Logo to be used by Software Reclamation"/>
+	        <column name="is_enabled"          			   type="boolean" mandatory="false" show_by_default="true" label="Enabled" plural="Enabled" hint="Is Reclamation Enabled"/>
+	      </columns>
+	    </table>	
+		<table name="opz_reclamation_activity_log" label="Reclamation Activity Log" plural="Reclamation Activity Logs" extends="sys_log_detail" hint="Reclamation activity log">		
+			<columns>
+				<column name="reclamation" type="reference" mandatory="false" on_delete="cascade_to_source" show_by_default="true" reference="opz_reclamation" label="Reclamation Plan" plural="Reclamation Plans" hint="Reclamation Plan" />
+			</columns>
+		</table>	       
+	</tables>
+</schema>

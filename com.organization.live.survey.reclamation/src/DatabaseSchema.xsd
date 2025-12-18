@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" 
+	xmlns:tns="http://www.organization.com/2012/02/10/DatabaseSchema" 
+	targetNamespace="http://www.organization.com/2012/02/10/DatabaseSchema"
+	elementFormDefault="qualified">
+
+	<element name="schema">
+		<complexType>
+			<sequence>
+				<element name="tables" maxOccurs="1" minOccurs="0">
+					<complexType>
+						<sequence>
+							<element name="table" type="tns:TableElement" maxOccurs="unbounded" minOccurs="0">
+							</element>
+						</sequence>
+					</complexType>
+				</element>
+			</sequence>
+		</complexType>
+	</element>
+
+	<complexType name="TableElement">
+		<sequence>
+			<element name="columns" maxOccurs="1" minOccurs="0">
+				<complexType>
+					<sequence>
+						<element name="column" type="tns:ColumnElement" maxOccurs="unbounded" minOccurs="0">
+						</element>
+					</sequence>
+				</complexType>
+			</element>
+			<element name="indexes" maxOccurs="1" minOccurs="0">
+				<complexType>
+					<sequence>
+						<element name="index" type="tns:IndexElement" maxOccurs="unbounded" minOccurs="0">
+						</element>
+					</sequence>
+				</complexType>
+			</element>
+			<element name="search" type="tns:SearchElement" maxOccurs="1" minOccurs="0">
+			</element>
+		</sequence>
+		<attribute name="name" type="string" use="required">
+			<annotation>
+				<documentation>
+					Name of the table.
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="extends" type="string" use="optional">
+			<annotation>
+				<documentation>
+					Table that this table extends.
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="title_column" type="string" use="optional">
+			<annotation>
+				<documentation>
+					Name of the column that will be used
+					as a title for rows from this table.
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="is_protected" type="boolean" use="optional" default="false">
+			<annotation>
+				<documentation>
+					Whether this table is critical for
+					system/application function.
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="is_options" type="boolean" use="optional" default="false">
+			<annotation>
+				<documentation>
+					Whether a choice of values from this
+					table should be represented as
+					"options" in the UI.
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="label" type="string" use="optional">
+			<annotation>
+				<documentation>
+					Human-friendly name to be used in the UI.
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="plural" type="string" use="optional">
+			<annotation>
+				<documentation>
+					Same as label, but in plural form.
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="hint" type="string" use="optional">
+			<annotation>
+				<documentation>
+					Hint (tooltip) to be used in the UI. More
+					descriptive than the label.
+				</documentation>
+			</annotation>
+		</attribute>
+	</complexType>
+	
+	<complexType name="ColumnElement">
+		<attribute name="name" type="string" use="required">
+			<annotation>
+				<documentation>
+					Name of the column.
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="type" type="tns:columnType" use="required">
+			<annotation>
+				<documentation>
+					Type of the column.
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="max_length" type="int" use="optional" default="-1">
+			<annotation>
+				<documentation>
+					Maximum length of the
+					column, depending on the
+					type.
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="precision" type="string" use="optional" default="-1">
+			<annotation>
+				<documentation>
+					Precision (number of
+					decimal places) for
+					numeric types.
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="reference" type="string" use="optional">
+			<annotation>
+				<documentation>
+					Name of referenced table
+					when type="reference".
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="is_protected" type="boolean" use="optional" default="false">
+			<annotation>
+				<documentation>
+					Whether this column is
+					critical for
+					system/application
+					function.
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="mandatory" type="boolean" use="optional" default="false">
+			<annotation>
+				<documentation>
+					Whether this column is
+					mandatory
+					(non-nullable).
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="show_by_default" type="boolean" use="optional" default="false">
+			<annotation>
+				<documentation>
+					Whether to show this
+					column in views by
+					default.
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="default" type="string" use="optional">
+			<annotation>
+				<documentation>
+					JavaScript to compute
+					the default value. E.g.
+					"&quot;&quot;" ("") for
+					strings; "new
+					java.util.Date(...)" for
+					a date.
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="label" type="string" use="optional">
+			<annotation>
+				<documentation>
+					Human-friendly name to be used in the UI.
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="plural" type="string" use="optional">
+			<annotation>
+				<documentation>
+					Same as label, but in plural form.
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="hint" type="string" use="optional">
+			<annotation>
+				<documentation>
+					Hint (tooltip) to be used in the UI. More
+					descriptive than the label.
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="auto_truncate" type="boolean" use="optional" default="false">
+			<annotation>
+				<documentation>
+					Whether to silently truncate values 
+					of string or binary column, if value 
+					length exceeds column size.
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="on_delete" type="tns:onDelete" use="optional">
+			<annotation>
+				<documentation>
+					Action to be performed, when a record 
+					is being deleted from database, 
+					and this column of the record contains 
+					non-null value. Works only if this column
+					is a reference.
+				</documentation>
+			</annotation>
+		</attribute>
+	</complexType>
+
+	<complexType name="IndexElement">
+		<sequence>
+			<element name="column" maxOccurs="unbounded" minOccurs="0">
+				<complexType>
+					<attribute name="name" type="string" use="required">
+						<annotation>
+							<documentation>
+								Name of the indexed column.
+							</documentation>
+						</annotation>
+					</attribute>
+				</complexType>
+			</element>
+		</sequence>
+		<attribute name="name" type="string" use="optional">
+			<annotation>
+				<documentation>
+					Name of the index. Is used to find
+					existing index, when updating existing
+					schema.
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="unique" type="boolean" use="optional" default="false">
+			<annotation>
+				<documentation>
+					Whether this index is unique.
+				</documentation>
+			</annotation>
+		</attribute>
+	</complexType>
+
+	<complexType name="SearchElement">
+		<sequence>
+			<element name="column" maxOccurs="unbounded" minOccurs="0">
+				<complexType>
+					<attribute name="name" type="string" use="required">
+						<annotation>
+							<documentation>
+								Name of the searchable column.
+							</documentation>
+						</annotation>
+					</attribute>
+				</complexType>
+			</element>
+		</sequence>
+	</complexType>
+
+	<simpleType name="columnType">
+		<annotation>
+			<documentation>Allowed column types.</documentation>
+		</annotation>
+		<restriction base="string">
+			<enumeration value="integer"></enumeration>
+			<enumeration value="decimal"></enumeration>
+			<enumeration value="boolean"></enumeration>
+			<enumeration value="string"></enumeration>
+			<enumeration value="text"></enumeration>
+			<enumeration value="binary"></enumeration>
+			<enumeration value="blob"></enumeration>
+			<enumeration value="date"></enumeration>
+			<enumeration value="datetime"></enumeration>
+			<enumeration value="time"></enumeration>
+			<enumeration value="hour_time"></enumeration>
+			<enumeration value="timestamp"></enumeration>
+			<enumeration value="password"></enumeration>
+			<enumeration value="script"></enumeration>
+			<enumeration value="identity"></enumeration>
+			<enumeration value="reference"></enumeration>
+			<enumeration value="column_name"></enumeration>
+			<enumeration value="table_name"></enumeration>
+			<enumeration value="criterion"></enumeration>
+			<enumeration value="month"></enumeration>
+			<enumeration value="email"></enumeration>
+			<enumeration value="phone"></enumeration>
+			<enumeration value="ip_address"></enumeration>
+			<enumeration value="mac_address"></enumeration>
+			<enumeration value="image"></enumeration>
+		</restriction>
+	</simpleType>
+
+	<simpleType name="onDelete">
+		<annotation>
+			<documentation>Allowed values for on-delete column property.</documentation>
+		</annotation>
+		<restriction base="string">
+			<enumeration value="cascade_to_source"></enumeration>
+			<enumeration value="cascade_to_target"></enumeration>
+			<enumeration value="cascade_to_both"></enumeration>
+		</restriction>
+	</simpleType>
+</schema>

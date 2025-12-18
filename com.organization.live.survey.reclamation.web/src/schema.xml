@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema>
+	<tables>
+
+		<table name="sys_sch_reclam_svc_init_job" label="Reclamation Service Init Job" plural="Reclamation Service Init Jobs" extends="sys_sch_job">
+			<columns>
+			</columns>
+		</table>
+		
+	</tables>
+</schema>

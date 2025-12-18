@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+                           http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<bean id="reclamationImplService" class="com.organization.live.survey.reclamation.impl.ReclamationPlanImpl"/>
+	
+	<bean id="reclamationJobBuilder" class="com.organization.live.survey.reclamation.impl.job.ReclamationJobBuilder">
+		<constructor-arg ref="reclamationImplService" />
+		<constructor-arg ref="loggerFactory" />		
+   		<constructor-arg ref="transportService" />
+	</bean>	
+	
+	<bean id="reclamationInitJobInstaller" class="com.organization.live.installer.utility.LinkedInstallerWrapper">
+		<property name="wrapIntoTransaction" value="false" />
+	  	<property name="installers">
+	  		<util:list list-class="java.util.LinkedList">
+	    		<bean id="initializer-inner" class="com.organization.live.installer.utility.LinkedInstallerWrapper">
+	     			<property name="installers">
+	      				<util:list list-class="java.util.LinkedList">
+		       				<bean class="com.organization.live.installer.utility.XmlSchemaInstaller">
+		        				<property name="xml">
+						         	<value>classpath:schema.xml</value>
+						        </property>
+		       				</bean>
+		       				<bean class="com.organization.live.installer.utility.XmlDbImportInstaller">
+		        				<property name="xml">
+		         					<value>classpath:data.xml</value>
+		        				</property>
+		       				</bean>
+	      				</util:list>
+	     			</property>
+	    		</bean>
+	    		<bean class="com.organization.live.scheduler.utility.SchedulerTaskUpdater">
+	     			<property name="taskName" value="Reclamation Implementation Service On Start" />
+	     			<property name="schedulerService" ref="schedulerService" />
+	    		</bean>
+	   		</util:list>
+	  	</property>
+	 </bean>
+
+</beans>

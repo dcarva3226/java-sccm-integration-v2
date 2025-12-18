@@ -1,0 +1,146 @@
+<refs>
+	<cmdb_management_platform>
+		<ref id="1" value="SMS/SCCM" />
+	</cmdb_management_platform>
+</refs>
+<data_view_info name="Reclamation Computer Status" table="cmdb_ci_computer" category="Optimize" show_summary="t" group_fields="f">
+	<columns>
+		<column path="domain" show_in_table="t"/>
+		<column path="name" show_in_table="t"/>
+		<column show_in_table="t" label="Email">
+			<attributes>
+					<path><![CDATA[_calc:email::string:"var useOwner = get(\"Use Owner True\");
+var usePrimaryUser = get(\"Use User True\");
+var ownerPersonEmail = get(\"Owner Person Email\");
+var ownerUserEmail = get(\"Owner User Email\");
+var primaryPersonEmail = get(\"Primary Person Email\");
+var primaryUserEmail = get(\"Primary User Email\");
+
+var email = null;
+
+if (useOwner > 0)
+{
+    if (ownerPersonEmail != null)
+        email = ownerPersonEmail;
+    else if (ownerUserEmail != null)
+        email = ownerUserEmail;
+}
+
+if (usePrimaryUser > 0 && email == null)
+{
+    if (primaryPersonEmail != null)
+        email = primaryPersonEmail;
+    else if (primaryUserEmail != null)
+        email = primaryUserEmail;    
+}
+
+	email;":]]></path>
+			</attributes>
+		</column>
+		<column path="id" field_set="cmdb_ci_computer" show_in_table="f"/>
+		<column custom_control="Simple Status" show_in_table="t" label="Reclamation Candidate">
+			<attributes>
+				<path><![CDATA[_calc:reclamation_ready:Green = Managed by SMS/SCCM and computer owner email or primary user email exists:string:"var managed = get(\"Managed\");
+var email = get(\"Email\");
+var agtStaleDays = get(\"Agent Stale Days\");
+var agtTimeStamp = get(\"Agent Timestamp\");
+var res = \"R:No\";
+
+if (managed == \"1\" && email != null)
+{
+	if (agtStaleDays == "") agtStaleDays = 0;
+    var staleDate = new java.util.Date();
+    staleDate.setDate(staleDate.getDate() - agtStaleDays);
+    if (agtTimeStamp.getTime() >= staleDate.getTime())
+    {
+        res = \"G:Yes\";
+    }    
+}
+res;":]]></path>
+			</attributes>
+		</column>
+		<column show_in_table="f" label="Managed">
+			<attributes>
+				<path><![CDATA[_agg:managed::Reclamation Managed Computers:" var 'device' is "id" ":COUNT:]]></path>
+			</attributes>
+		</column>
+		<column show_in_table="t" label="Message">
+				<attributes>
+				<path><![CDATA[_calc:message:Message regarding candidate computer:string:"var email = get(\"Email\");
+var managed = get(\"Managed\");
+var agtStaleDays = get(\"Agent Stale Days\");
+var agtTimeStamp = get(\"Agent Timestamp\");
+var msg = "";
+var cnt = 0;
+
+if (email == null)
+{
+    if (cnt > 0)
+    {
+        msg = msg + \", \";
+    }
+    msg = msg + \"No computer primary user email or owner email found\";
+    cnt++;
+}
+
+if (agtStaleDays == "") agtStaleDays = 0;
+var staleDate = new java.util.Date();
+staleDate.setDate(staleDate.getDate() - agtStaleDays);
+
+if (managed == \"0\" || (agtTimeStamp.getTime() < staleDate.getTime()))
+{
+    if (cnt > 0)
+    {
+        msg = msg + \", \";
+    }
+    msg = msg + \"Computer not managed by SMS/SCCM\";
+}
+
+if (msg == "")
+    msg = "Ready";
+
+msg;":]]></path>
+			</attributes>
+		</column>		
+		<column path="primary_user>person>email" field_set="cmdb_ci_computer" show_in_table="f" label="Primary Person Email"/>
+		<column path="primary_user>email" field_set="cmdb_ci_computer" show_in_table="f" label="Primary User Email"/>
+		<column path="owner>person>email" field_set="cmdb_ci" show_in_table="f" label="Owner Person Email"/>
+		<column path="owner>email" field_set="cmdb_ci" show_in_table="f" label="Owner User Email"/>		
+		<column show_in_table="f" label="Use Owner True">
+			<attributes>
+				<path><![CDATA[_agg:use_owner_true:Does Reclamation configuration have 'Use Owner' enabled?:Reclamation Configuration:" 'use_owner' is t ":COUNT:]]></path>
+			</attributes>
+		</column>
+		<column show_in_table="f" label="Use User True">
+			<attributes>
+				<path><![CDATA[_agg:use_primary_user_true:Does Reclamation configuration have 'Use Primary User' enabled?:Reclamation Configuration:" 'use_user' is t ":COUNT:]]></path>
+			</attributes>
+		</column>
+		<column show_in_table="f" label="Agent Stale Days">
+			<attributes>
+				<path><![CDATA[_agg:agent_stale_days:How many days without agent contact render computer as scale:Reclamation Configuration:" 'is_enabled' is t or 'is_enabled' is f ":MAX:agent_stale_days]]></path>
+			</attributes>
+		</column>
+		<column show_in_table="f" label="Agent Timestamp">
+			<attributes>
+				<path><![CDATA[_agg:agent_timestamp:Timestamp of last agent contact/refresh:Reclamation Managed Computers:" var 'device' is "id" ":MAX:agent_timestamp]]></path>
+			</attributes>
+		</column>
+	</columns>
+	<custom_filters>
+		<custom_filter name="Reclamation Candidate">
+			<attributes>
+				<criteria><![CDATA[ 'managed' greater than 0 and ('primary_user>person>email' is not empty or 'primary_user>email' is not empty or 'owner>person>email' is not empty or 'owner>email' is not empty) ]]></criteria>
+			</attributes>
+		</custom_filter>
+		<custom_filter name="Not a Reclamation Candidate">
+			<attributes>
+				<criteria><![CDATA[ 'managed' is 0 or ('primary_user>person>email' is empty and 'primary_user>email' is empty and 'owner>person>email' is empty and 'owner>email' is empty)  ]]></criteria>
+			</attributes>
+		</custom_filter>
+	</custom_filters>	
+	<field_sets>
+		<field_set name="cmdb_ci" label="Configuration Item" collapsed="f"/>
+		<field_set name="cmdb_ci_computer" label="Computer" collapsed="f"/>
+	</field_sets>
+</data_view_info>
