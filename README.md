@@ -1,5 +1,7 @@
 Needed a place to start storing sample java code for future re-use. This project represents a connector for SCCM.
 
+Some code has been removed for security reasons.
+
 ## License
 Proprietary / Custom License
 
